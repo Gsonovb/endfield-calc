@@ -5,7 +5,7 @@ import { SiDiscord, SiTencentqq } from "react-icons/si";
 export default function AppFooter() {
   const { t } = useTranslation("app");
   return (
-    <footer className="border-t mt-auto">
+    <footer className="border-t mt-auto [@media(orientation:portrait)]:hidden">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-2 text-sm text-muted-foreground">
         {/* Left section */}
         <div className="flex items-center gap-2 text-xs sm:text-sm">

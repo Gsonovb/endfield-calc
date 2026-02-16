@@ -61,12 +61,12 @@ export default function ProductionViewTabs({
             >
               <TabsList className="grid w-full max-w-md grid-cols-2">
                 <TabsTrigger value="table" className="gap-2">
-                  <BarChart3 className="h-4 w-4" />
-                  <span>{t("tabs.table")}</span>
+                  <BarChart3 className="h-4 w-4 shrink-0" />
+                  <span className="hidden sm:inline">{t("tabs.table")}</span>
                 </TabsTrigger>
                 <TabsTrigger value="tree" className="gap-2">
-                  <Network className="h-4 w-4" />
-                  <span>{t("tabs.tree")}</span>
+                  <Network className="h-4 w-4 shrink-0" />
+                  <span className="hidden sm:inline">{t("tabs.tree")}</span>
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -77,7 +77,10 @@ export default function ProductionViewTabs({
                 checked={ceilMode}
                 onCheckedChange={onCeilModeChange}
               />
-              <Label htmlFor="ceil-mode" className="text-xs whitespace-nowrap cursor-pointer">
+              <Label
+                htmlFor="ceil-mode"
+                className="text-xs whitespace-nowrap cursor-pointer hidden sm:block"
+              >
                 {t("ceilMode")}
               </Label>
             </div>
@@ -91,10 +94,16 @@ export default function ProductionViewTabs({
                 }}
               >
                 <ToggleGroupItem value="merged" aria-label="Merged view">
-                  <span className="text-xs">{t("tabs.merged")}</span>
+                  <span className="text-xs hidden sm:inline">
+                    {t("tabs.merged")}
+                  </span>
+                  <Network className="h-3.5 w-3.5 sm:hidden" />
                 </ToggleGroupItem>
                 <ToggleGroupItem value="separated" aria-label="Separated view">
-                  <span className="text-xs">{t("tabs.separated")}</span>
+                  <span className="text-xs hidden sm:inline">
+                    {t("tabs.separated")}
+                  </span>
+                  <BarChart3 className="h-3.5 w-3.5 sm:hidden" />
                 </ToggleGroupItem>
               </ToggleGroup>
             )}
