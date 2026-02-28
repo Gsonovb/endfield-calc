@@ -86,6 +86,64 @@ function getNodeDimensions(node: Node): { width: number; height: number } {
   return NODE_DIMENSIONS.PRODUCTION_NODE;
 }
 
+function isRawMaterialNode(node: Node): node is FlowProductionNode {
+  return (
+    node.type === "productionNode" &&
+    (node as FlowProductionNode).data.productionNode.isRawMaterial
+  );
+}
+
+function alignTwoEnds(nodes: Node[]): Node[] {
+  if (nodes.length === 0) return nodes;
+
+  const rawNodes = nodes.filter(isRawMaterialNode);
+  const targetNodes = nodes.filter((node) => node.type === "targetSink");
+
+  if (rawNodes.length === 0 && targetNodes.length === 0) {
+    return nodes;
+  }
+
+  const leftX =
+    rawNodes.length > 0
+      ? Math.min(...rawNodes.map((node) => node.position.x))
+      : undefined;
+
+  const maxRight =
+    targetNodes.length > 0
+      ? Math.max(
+          ...targetNodes.map((node) => {
+            const dimensions = getNodeDimensions(node);
+            return node.position.x + dimensions.width;
+          }),
+        )
+      : undefined;
+
+  return nodes.map((node) => {
+    if (leftX !== undefined && isRawMaterialNode(node)) {
+      return {
+        ...node,
+        position: {
+          ...node.position,
+          x: leftX,
+        },
+      };
+    }
+
+    if (maxRight !== undefined && node.type === "targetSink") {
+      const dimensions = getNodeDimensions(node);
+      return {
+        ...node,
+        position: {
+          ...node.position,
+          x: maxRight - dimensions.width,
+        },
+      };
+    }
+
+    return node;
+  });
+}
+
 /**
  * Lays out React Flow elements using the ELK algorithm.
  * ELK provides better handling of hierarchy and complex cycles than Dagre.
@@ -182,7 +240,11 @@ export const getLayoutedElements = async (
       };
     });
 
-    return { nodes: layoutedNodes, edges };
+    const finalNodes = twoEndAlignment
+      ? alignTwoEnds(layoutedNodes)
+      : layoutedNodes;
+
+    return { nodes: finalNodes, edges };
   } catch (error) {
     console.error("ELK layout failed:", error);
     return { nodes, edges };
