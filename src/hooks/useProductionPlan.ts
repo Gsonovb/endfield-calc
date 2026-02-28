@@ -1,25 +1,159 @@
 import { calculateProductionPlan } from "@/lib/calculator";
 import { items, recipes, facilities, MAX_TARGETS } from "@/data";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import type { ProductionTarget } from "@/components/panels/TargetItemsGrid";
-import type { ItemId, RecipeId, ProductionDependencyGraph, ProductionGraphNode } from "@/types";
+import type {
+  ItemId,
+  RecipeId,
+  ProductionDependencyGraph,
+  ProductionGraphNode,
+} from "@/types";
 import { useTranslation } from "react-i18next";
 import { useProductionStats } from "./useProductionStats";
 import { useProductionTable } from "./useProductionTable";
 
+interface ParsedHashState {
+  targets: ProductionTarget[];
+  recipeOverrides: Map<ItemId, RecipeId>;
+  manualRawMaterials: Set<ItemId>;
+  ceilMode: boolean;
+}
+
+function parseHash(): ParsedHashState {
+  const defaultState: ParsedHashState = {
+    targets: [],
+    recipeOverrides: new Map(),
+    manualRawMaterials: new Set(),
+    ceilMode: false,
+  };
+
+  try {
+    const hash = window.location.hash.slice(1); // remove leading '#'
+    if (!hash) return defaultState;
+
+    const params = new URLSearchParams(hash);
+    const knownItemIds = new Set(items.map((item) => item.id));
+    const knownRecipeIds = new Set(recipes.map((recipe) => recipe.id));
+
+    // Parse targets: t=item_steel:6,item_glass:3
+    const targetsRaw = params.get("t");
+    const parsedTargets: ProductionTarget[] = [];
+    if (targetsRaw) {
+      for (const part of targetsRaw.split(",")) {
+        const colonIdx = part.lastIndexOf(":");
+        if (colonIdx === -1) continue;
+        const itemId = part.slice(0, colonIdx) as ItemId;
+        const rate = parseFloat(part.slice(colonIdx + 1));
+        if (knownItemIds.has(itemId) && isFinite(rate) && rate > 0) {
+          parsedTargets.push({ itemId, rate });
+        }
+      }
+    }
+
+    // Parse recipeOverrides: r=item_steel:recipe_alloy
+    const recipeRaw = params.get("r");
+    const parsedRecipeOverrides = new Map<ItemId, RecipeId>();
+    if (recipeRaw) {
+      for (const part of recipeRaw.split(",")) {
+        const colonIdx = part.indexOf(":");
+        if (colonIdx === -1) continue;
+        const itemId = part.slice(0, colonIdx) as ItemId;
+        const recipeId = part.slice(colonIdx + 1) as RecipeId;
+        if (knownItemIds.has(itemId) && knownRecipeIds.has(recipeId)) {
+          parsedRecipeOverrides.set(itemId, recipeId);
+        }
+      }
+    }
+
+    // Parse manualRawMaterials: m=item_coal,item_wood
+    const manualRaw = params.get("m");
+    const parsedManualRawMaterials = new Set<ItemId>();
+    if (manualRaw) {
+      for (const rawId of manualRaw.split(",")) {
+        const itemId = rawId as ItemId;
+        if (knownItemIds.has(itemId)) {
+          parsedManualRawMaterials.add(itemId);
+        }
+      }
+    }
+
+    // Parse ceilMode: c=1
+    const ceilRaw = params.get("c");
+    const parsedCeilMode = ceilRaw === "1";
+
+    return {
+      targets: parsedTargets,
+      recipeOverrides: parsedRecipeOverrides,
+      manualRawMaterials: parsedManualRawMaterials,
+      ceilMode: parsedCeilMode,
+    };
+  } catch {
+    return defaultState;
+  }
+}
+
+function serializeHash(
+  targets: ProductionTarget[],
+  recipeOverrides: Map<ItemId, RecipeId>,
+  manualRawMaterials: Set<ItemId>,
+  ceilMode: boolean,
+): string {
+  const params = new URLSearchParams();
+
+  if (targets.length > 0) {
+    params.set("t", targets.map((t) => `${t.itemId}:${t.rate}`).join(","));
+  }
+
+  if (recipeOverrides.size > 0) {
+    params.set(
+      "r",
+      Array.from(recipeOverrides.entries())
+        .map(([itemId, recipeId]) => `${itemId}:${recipeId}`)
+        .join(","),
+    );
+  }
+
+  if (manualRawMaterials.size > 0) {
+    params.set("m", Array.from(manualRawMaterials).join(","));
+  }
+
+  if (ceilMode) {
+    params.set("c", "1");
+  }
+
+  return params.toString();
+}
+
 export function useProductionPlan() {
   const { t } = useTranslation("app");
 
-  const [targets, setTargets] = useState<ProductionTarget[]>([]);
+  const initialState = useMemo(() => parseHash(), []);
+
+  const [targets, setTargets] = useState<ProductionTarget[]>(
+    initialState.targets,
+  );
   const [recipeOverrides, setRecipeOverrides] = useState<Map<ItemId, RecipeId>>(
-    new Map(),
+    initialState.recipeOverrides,
   );
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"table" | "tree">("table");
   const [manualRawMaterials, setManualRawMaterials] = useState<Set<ItemId>>(
-    new Set(),
+    initialState.manualRawMaterials,
   );
-  const [ceilMode, setCeilMode] = useState(false);
+  const [ceilMode, setCeilMode] = useState(initialState.ceilMode);
+
+  useEffect(() => {
+    const hash = serializeHash(
+      targets,
+      recipeOverrides,
+      manualRawMaterials,
+      ceilMode,
+    );
+    const newUrl = hash
+      ? `${window.location.pathname}${window.location.search}#${hash}`
+      : window.location.pathname + window.location.search;
+    history.replaceState(null, "", newUrl);
+  }, [targets, recipeOverrides, manualRawMaterials, ceilMode]);
 
   // Core calculation: only returns dependency tree and cycles
   const { plan, error } = useMemo(() => {
@@ -50,7 +184,10 @@ export function useProductionPlan() {
     const ceiledNodes = new Map<string, ProductionGraphNode>();
     for (const [key, node] of plan.nodes) {
       if (node.type === "recipe") {
-        ceiledNodes.set(key, { ...node, facilityCount: Math.ceil(node.facilityCount) });
+        ceiledNodes.set(key, {
+          ...node,
+          facilityCount: Math.ceil(node.facilityCount),
+        });
       } else {
         ceiledNodes.set(key, node);
       }
