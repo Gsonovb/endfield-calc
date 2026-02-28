@@ -84,7 +84,7 @@ export default function ProductionDependencyTree({
           flowData.nodes,
           flowData.edges,
           "RIGHT",
-          visualizationMode === "separated" && twoEndAlignment,
+          twoEndAlignment,
         );
 
       if (!isMounted) return;

@@ -93,6 +93,59 @@ function isRawMaterialNode(node: Node): node is FlowProductionNode {
   );
 }
 
+const VERTICAL_GAP = 100;
+
+/**
+ * After x-alignment, some nodes that were in adjacent sub-layers
+ * may now share the same x column and overlap vertically.
+ * This pass sorts each column by y and redistributes nodes
+ * so there is at least VERTICAL_GAP pixels between them.
+ */
+function resolveVerticalOverlaps(nodes: Node[]): Node[] {
+  if (nodes.length <= 1) return nodes;
+
+  const X_TOLERANCE = 2;
+  const columns: Node[][] = [];
+
+  for (const node of nodes) {
+    const col = columns.find(
+      (c) => Math.abs(c[0].position.x - node.position.x) <= X_TOLERANCE,
+    );
+    if (col) {
+      col.push(node);
+    } else {
+      columns.push([node]);
+    }
+  }
+
+  const adjustments = new Map<string, number>();
+
+  for (const col of columns) {
+    if (col.length <= 1) continue;
+
+    col.sort((a, b) => a.position.y - b.position.y);
+
+    let cursor = col[0].position.y;
+    adjustments.set(col[0].id, cursor);
+
+    for (let i = 1; i < col.length; i++) {
+      const prev = col[i - 1];
+      const prevHeight = getNodeDimensions(prev).height;
+      const minY = cursor + prevHeight + VERTICAL_GAP;
+      cursor = Math.max(col[i].position.y, minY);
+      adjustments.set(col[i].id, cursor);
+    }
+  }
+
+  if (adjustments.size === 0) return nodes;
+
+  return nodes.map((node) => {
+    const newY = adjustments.get(node.id);
+    if (newY === undefined) return node;
+    return { ...node, position: { ...node.position, y: newY } };
+  });
+}
+
 function alignTwoEnds(nodes: Node[]): Node[] {
   if (nodes.length === 0) return nodes;
 
@@ -170,8 +223,8 @@ export const getLayoutedElements = async (
     layoutOptions: {
       "elk.algorithm": "layered",
       "elk.direction": direction,
-      "elk.layered.spacing.nodeNodeBetweenLayers": "150",
-      "elk.spacing.nodeNode": "100",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "200",
+      "elk.spacing.nodeNode":"100",
       "elk.edgeRouting": "SPLINES",
       "elk.layered.feedbackEdges": "true",
       "elk.layered.nodePlacement.favorStraightEdges": "0.2",
@@ -240,9 +293,10 @@ export const getLayoutedElements = async (
       };
     });
 
+
     const finalNodes = twoEndAlignment
-      ? alignTwoEnds(layoutedNodes)
-      : layoutedNodes;
+      ? resolveVerticalOverlaps(alignTwoEnds(layoutedNodes))
+      : resolveVerticalOverlaps(layoutedNodes);
 
     return { nodes: finalNodes, edges };
   } catch (error) {

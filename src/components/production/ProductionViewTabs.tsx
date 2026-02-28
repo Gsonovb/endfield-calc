@@ -86,7 +86,7 @@ export default function ProductionViewTabs({
               </Label>
             </div>
 
-            {activeTab === "tree" && visualizationMode === "separated" && (
+            {activeTab === "tree" && (
               <div className="flex items-center gap-2">
                 <Switch
                   id="two-end-alignment"
