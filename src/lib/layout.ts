@@ -90,11 +90,15 @@ function getNodeDimensions(node: Node): { width: number; height: number } {
  * Lays out React Flow elements using the ELK algorithm.
  * ELK provides better handling of hierarchy and complex cycles than Dagre.
  * Uses static node dimensions for consistent and immediate layout.
+ *
+ * @param twoEndAlignment When true (separated mode only), forces raw material
+ *   nodes to the leftmost layer and target sink nodes to the rightmost layer.
  */
 export const getLayoutedElements = async (
   nodes: Node[],
   edges: Edge[],
   direction = "RIGHT",
+  twoEndAlignment = false,
 ) => {
   // Ensure the engine is loaded
   if (!elkInstance) {
@@ -118,11 +122,28 @@ export const getLayoutedElements = async (
     },
     children: nodes.map((node) => {
       const dimensions = getNodeDimensions(node);
-      return {
+      const elkNode: ElkNode = {
         id: node.id,
         width: dimensions.width,
         height: dimensions.height,
       };
+
+      if (twoEndAlignment) {
+        if (node.type === "productionNode") {
+          const prodNode = node as FlowProductionNode;
+          if (prodNode.data.productionNode.isRawMaterial) {
+            elkNode.layoutOptions = {
+              "org.eclipse.elk.layered.layeringConstraint": "FIRST_SEPARATE",
+            };
+          }
+        } else if (node.type === "targetSink") {
+          elkNode.layoutOptions = {
+            "org.eclipse.elk.layered.layeringConstraint": "LAST_SEPARATE",
+          };
+        }
+      }
+
+      return elkNode;
     }),
     edges: edges.map((edge) => {
       const isBackward =

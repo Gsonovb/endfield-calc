@@ -33,6 +33,7 @@ type ProductionDependencyTreeProps = {
   facilities: Facility[];
   visualizationMode?: VisualizationMode;
   targetRates?: Map<ItemId, number>;
+  twoEndAlignment?: boolean;
 };
 
 /**
@@ -54,6 +55,7 @@ export default function ProductionDependencyTree({
   facilities,
   visualizationMode = "separated",
   targetRates,
+  twoEndAlignment = false,
 }: ProductionDependencyTreeProps) {
   const { t } = useTranslation("production");
 
@@ -78,7 +80,12 @@ export default function ProductionDependencyTree({
           : mapPlanToFlowMerged(plan, items, facilities, targetRates);
 
       const { nodes: layoutedNodes, edges: layoutedEdges } =
-        await getLayoutedElements(flowData.nodes, flowData.edges, "RIGHT");
+        await getLayoutedElements(
+          flowData.nodes,
+          flowData.edges,
+          "RIGHT",
+          visualizationMode === "separated" && twoEndAlignment,
+        );
 
       if (!isMounted) return;
 
@@ -93,7 +100,7 @@ export default function ProductionDependencyTree({
     return () => {
       isMounted = false;
     };
-  }, [plan, items, facilities, visualizationMode, targetRates, setNodes, setEdges]);
+  }, [plan, items, facilities, visualizationMode, targetRates, twoEndAlignment, setNodes, setEdges]);
 
   const nodeTypes: NodeTypes = useMemo(
     () => ({
