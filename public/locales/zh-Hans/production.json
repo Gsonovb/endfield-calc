@@ -1,4 +1,8 @@
 {
+  "belt": {
+    "belts": "条传送带",
+    "tooltip": "所需输出传送带（每分钟{{belt_rate}}个物品容量）"
+  },
   "recipe": {
     "inputs": "输入",
     "outputs": "产出",
@@ -6,6 +10,7 @@
   },
   "table": {
     "headers": {
+      "belts": "传送带",
       "count": "数量",
       "facility": "设施",
       "icon": "图标",
