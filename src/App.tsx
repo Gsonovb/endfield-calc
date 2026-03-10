@@ -64,6 +64,8 @@ export default function App() {
                 productionSteps={stats.uniqueProductionSteps}
                 rawMaterialRequirements={stats.rawMaterialRequirements}
                 facilityRequirements={stats.facilityRequirements}
+                totalPickupPoints={stats.totalPickupPoints}
+                rawMaterialPickupPoints={stats.rawMaterialPickupPoints}
                 error={error}
                 onTargetChange={handleTargetChange}
                 onTargetRemove={handleTargetRemove}
@@ -95,6 +97,8 @@ export default function App() {
               productionSteps={stats.uniqueProductionSteps}
               rawMaterialRequirements={stats.rawMaterialRequirements}
               facilityRequirements={stats.facilityRequirements}
+              totalPickupPoints={stats.totalPickupPoints}
+              rawMaterialPickupPoints={stats.rawMaterialPickupPoints}
               error={error}
               onTargetChange={handleTargetChange}
               onTargetRemove={handleTargetRemove}
