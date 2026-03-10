@@ -10,7 +10,9 @@
   "header": {
     "community": "커뮤니티",
     "discord": "Discord 서버",
-    "qqGroup": "QQ 그룹"
+    "qqGroup": "QQ 그룹",
+    "save": "플랜 저장",
+    "open": "플랜 열기"
   },
   "tabs": {
     "merged": "제조법 보기",

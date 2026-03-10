@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import {
   ReactFlow,
   Controls,
@@ -8,8 +8,13 @@ import {
   useNodesState,
   useEdgesState,
   type Edge,
+  Panel,
+  useReactFlow,
+  getNodesBounds,
+  getViewportForBounds,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { toPng } from "html-to-image";
 import type {
   Item,
   ItemId,
@@ -26,6 +31,76 @@ import { mapPlanToFlowMerged } from "../mappers/merged-mapper";
 import { mapPlanToFlowSeparated } from "../mappers/separated-mapper";
 import { applyEdgeStyling } from "./flow-utils";
 import CustomBackwardEdge from "../nodes/CustomBackwardEdge";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Download } from "lucide-react";
+
+const IMAGE_WIDTH = 1600;
+const IMAGE_HEIGHT = 900;
+
+function ExportImageButton({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) {
+  const { t } = useTranslation("production");
+  const { getNodes } = useReactFlow();
+
+  const handleExport = () => {
+    const viewport = containerRef.current?.querySelector(
+      ".react-flow__viewport",
+    ) as HTMLElement | null;
+    if (!viewport) return;
+
+    const nodesBounds = getNodesBounds(getNodes());
+    const { x, y, zoom } = getViewportForBounds(
+      nodesBounds,
+      IMAGE_WIDTH,
+      IMAGE_HEIGHT,
+      0.1,
+      2,
+      0.1,
+    );
+
+    toPng(viewport, {
+      backgroundColor: "var(--background)",
+      width: IMAGE_WIDTH,
+      height: IMAGE_HEIGHT,
+      style: {
+        width: `${IMAGE_WIDTH}px`,
+        height: `${IMAGE_HEIGHT}px`,
+        transform: `translate(${x}px, ${y}px) scale(${zoom})`,
+      },
+    })
+      .then((dataUrl) => {
+        const a = document.createElement("a");
+        a.download = "production-graph.png";
+        a.href = dataUrl;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      })
+      .catch(() => {
+        // ignore export errors
+      });
+  };
+
+  return (
+    <Panel position="top-right">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            className="h-8 w-8 p-0 bg-card border-border shadow-sm"
+            aria-label={t("tree.exportImage")}
+          >
+            <Download className="h-3.5 w-3.5" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>{t("tree.exportImage")}</TooltipContent>
+      </Tooltip>
+    </Panel>
+  );
+}
+
 
 type ProductionDependencyTreeProps = {
   plan: ProductionDependencyGraph | null;
@@ -58,6 +133,7 @@ export default function ProductionDependencyTree({
   twoEndAlignment = false,
 }: ProductionDependencyTreeProps) {
   const { t } = useTranslation("production");
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<FlowProductionNode>(
     [],
@@ -127,7 +203,7 @@ export default function ProductionDependencyTree({
 
   return (
     <div className="h-full w-full flex flex-col">
-      <div className="flex-1">
+      <div className="flex-1" ref={containerRef}>
         <ReactFlow
           className="flow-theme"
           nodes={nodes}
@@ -155,6 +231,7 @@ export default function ProductionDependencyTree({
               overflow: "hidden",
             }}
           />
+          <ExportImageButton containerRef={containerRef} />
         </ReactFlow>
       </div>
     </div>

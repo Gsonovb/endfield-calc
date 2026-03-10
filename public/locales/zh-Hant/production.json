@@ -40,6 +40,7 @@
     "targetDescription": "每分鐘生產 {{item}} {{rate}}。",
     "targetRate": "目標速率",
     "pickupPoint": "取貨口",
-    "trueRawMaterial": "純淨原料"
+    "trueRawMaterial": "純淨原料",
+    "exportImage": "匯出圖片"
   }
 }

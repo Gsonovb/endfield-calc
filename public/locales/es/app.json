@@ -10,7 +10,9 @@
   "header": {
     "community": "Comunidad",
     "discord": "Servidor de Discord",
-    "qqGroup": "Grupo de QQ"
+    "qqGroup": "Grupo de QQ",
+    "save": "Guardar plan",
+    "open": "Abrir plan"
   },
   "tabs": {
     "merged": "Vista de Receta",
