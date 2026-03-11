@@ -37,7 +37,7 @@ Use clear, descriptive messages:
 
 ## Reporting Issues
 
-Found a bug or have a suggestion? [Open an issue](https://github.com/gsonovb/endfield-calc/issues) with:
+Found a bug or have a suggestion? [Open an issue](https://github.com/jambochen/endfield-calc/issues) with:
 - Clear description of the problem/suggestion
 - Steps to reproduce (for bugs)
 - Screenshots if applicable

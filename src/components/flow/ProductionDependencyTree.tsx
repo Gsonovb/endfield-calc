@@ -74,9 +74,10 @@ function ExportImageButton({ containerRef }: { containerRef: React.RefObject<HTM
 
     // Base export size matches the actual content bounds (no distortion)
     const baseWidth = Math.ceil(nodesBounds.width);
-    const baseHeight = Math.ceil(nodesBounds.height);
+    const baseHeight = Math.ceil(nodesBounds.height + 100); // add extra height to accommodate edge labels outside node bounds
     const exportWidth = format === "png" ? baseWidth * scale : baseWidth;
     const exportHeight = format === "png" ? baseHeight * scale : baseHeight;
+
 
     const { x, y, zoom } = getViewportForBounds(
       nodesBounds,

@@ -126,7 +126,7 @@ export default function AppHeader({ onLanguageChange, onSavePlan, onOpenPlan }: 
 
           {/* GitHub link */}
           <a
-            href="https://github.com/gsonovb/endfield-calc"
+            href="https://github.com/jambochen/endfield-calc"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
