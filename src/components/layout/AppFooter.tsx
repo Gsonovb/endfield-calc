@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Scale } from "lucide-react";
-import { SiDiscord, SiQq } from "react-icons/si";
+import { SiDiscord, SiTencentqq } from "react-icons/si";
 
 export default function AppFooter() {
   const { t } = useTranslation("app");
@@ -16,7 +16,7 @@ export default function AppFooter() {
             rel="noopener noreferrer"
             className="flex items-center gap-1 hover:text-foreground transition-colors"
           >
-            <SiQq className="h-3.5 w-3.5" />
+            <SiTencentqq className="h-3.5 w-3.5" />
             <span>1075221296</span>
           </a>
           <span className="text-muted-foreground/60">•</span>
