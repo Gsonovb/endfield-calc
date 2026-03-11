@@ -14,14 +14,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "../ui/theme-provider";
-import { MessageCircle, Sun, Moon } from "lucide-react";
+import { MessageCircle, Sun, Moon, Save, FolderOpen } from "lucide-react";
 import { SiGithub, SiDiscord, SiTencentqq } from "react-icons/si";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface AppHeaderProps {
   onLanguageChange: (lang: string) => void;
+  onSavePlan: () => void;
+  onOpenPlan: () => void;
 }
 
-export default function AppHeader({ onLanguageChange }: AppHeaderProps) {
+export default function AppHeader({ onLanguageChange, onSavePlan, onOpenPlan }: AppHeaderProps) {
   const { t, i18n } = useTranslation("app");
   const { theme, setTheme } = useTheme();
 
@@ -31,6 +34,40 @@ export default function AppHeader({ onLanguageChange }: AppHeaderProps) {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t("title")}</h1>
         <div className="flex items-center gap-4">
+          {/* Save plan button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onSavePlan}
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                aria-label={t("header.save")}
+              >
+                <Save className="h-4 w-4" />
+                <span>{t("header.save")}</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t("header.save")}</TooltipContent>
+          </Tooltip>
+
+          {/* Open plan button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onOpenPlan}
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                aria-label={t("header.open")}
+              >
+                <FolderOpen className="h-4 w-4" />
+                <span>{t("header.open")}</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t("header.open")}</TooltipContent>
+          </Tooltip>
+
           {/* Community dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

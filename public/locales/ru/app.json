@@ -10,7 +10,9 @@
   "header": {
     "community": "Сообщество",
     "discord": "Сервер Discord",
-    "qqGroup": "Группа QQ"
+    "qqGroup": "Группа QQ",
+    "save": "Сохранить план",
+    "open": "Открыть план"
   },
   "tabs": {
     "merged": "Вид рецепта",

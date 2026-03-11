@@ -10,7 +10,9 @@
   "header": {
     "community": "社群",
     "discord": "Discord 伺服器",
-    "qqGroup": "QQ 群"
+    "qqGroup": "QQ 群",
+    "save": "儲存方案",
+    "open": "開啟方案"
   },
   "tabs": {
     "merged": "配方視圖",

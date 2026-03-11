@@ -10,7 +10,9 @@
   "header": {
     "community": "コミュニティ",
     "discord": "Discord サーバー",
-    "qqGroup": "QQ グループ"
+    "qqGroup": "QQ グループ",
+    "save": "プランを保存",
+    "open": "プランを開く"
   },
   "tabs": {
     "merged": "レシピ表示",
