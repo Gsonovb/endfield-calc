@@ -4,14 +4,19 @@
     "outputs": "Outputs",
     "time": "Time"
   },
+  "belt": {
+    "belts": "belts",
+    "tooltip": "Required output transport belts ({{belt_rate}} items/min capacity)"
+  },
   "table": {
     "headers": {
+      "belts": "Belts",
       "count": "Count",
       "facility": "Facility",
       "icon": "Icon",
       "item": "Item",
       "outputRate": "Output/min",
-      "power": "Power (kW)",
+      "power": "Power",
       "rawMaterial": "Raw Material",
       "recipe": "Recipe"
     },

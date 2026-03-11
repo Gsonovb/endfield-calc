@@ -24,9 +24,27 @@ interface AppHeaderProps {
   onOpenPlan: () => void;
 }
 
+const SUPPORTED_LANGS = ["en", "zh-Hans", "zh-Hant", "ja", "ko", "es", "ru"];
+
+const LANG_NORMALIZE: Record<string, string> = {
+  zh: "zh-Hans",
+  "zh-CN": "zh-Hans",
+  "zh-TW": "zh-Hant",
+};
+
+function resolveDisplayLang(lang: string): string {
+  if (SUPPORTED_LANGS.includes(lang)) return lang;
+  if (LANG_NORMALIZE[lang]) return LANG_NORMALIZE[lang];
+  // e.g. "en-US" -> "en", "ja-JP" -> "ja"
+  const prefix = lang.split("-")[0];
+  if (SUPPORTED_LANGS.includes(prefix)) return prefix;
+  return "en";
+}
+
 export default function AppHeader({ onLanguageChange, onSavePlan, onOpenPlan }: AppHeaderProps) {
   const { t, i18n } = useTranslation("app");
   const { theme, setTheme } = useTheme();
+  const currentLang = resolveDisplayLang(i18n.language);
 
   return (
     <div className="flex flex-col gap-2">
@@ -132,7 +150,7 @@ export default function AppHeader({ onLanguageChange, onSavePlan, onOpenPlan }: 
           </Button>
 
           {/* Language selector */}
-          <Select value={i18n.language} onValueChange={onLanguageChange}>
+          <Select value={currentLang} onValueChange={onLanguageChange}>
             <SelectTrigger className="w-[120px] h-9">
               <SelectValue />
             </SelectTrigger>

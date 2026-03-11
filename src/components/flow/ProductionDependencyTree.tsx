@@ -189,6 +189,7 @@ function ExportImageButton({ containerRef }: { containerRef: React.RefObject<HTM
   );
 }
 
+import CustomBezierEdge from "../nodes/CustomBezierEdge";
 
 type ProductionDependencyTreeProps = {
   plan: ProductionDependencyGraph | null;
@@ -197,6 +198,7 @@ type ProductionDependencyTreeProps = {
   visualizationMode?: VisualizationMode;
   targetRates?: Map<ItemId, number>;
   twoEndAlignment?: boolean;
+  ceilMode?: boolean;
 };
 
 /**
@@ -219,6 +221,7 @@ export default function ProductionDependencyTree({
   visualizationMode = "separated",
   targetRates,
   twoEndAlignment = false,
+  ceilMode = false,
 }: ProductionDependencyTreeProps) {
   const { t } = useTranslation("production");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -237,11 +240,14 @@ export default function ProductionDependencyTree({
         return;
       }
 
+      // Get translated belt label
+      const beltLabel = t("belt.belts");
+
       // Select mapper - now passes DAG structure instead of tree
       const flowData =
         visualizationMode === "separated"
-          ? mapPlanToFlowSeparated(plan, items, facilities, targetRates)
-          : mapPlanToFlowMerged(plan, items, facilities, targetRates);
+          ? mapPlanToFlowSeparated(plan, items, facilities, beltLabel, targetRates, ceilMode)
+          : mapPlanToFlowMerged(plan, items, facilities, beltLabel, targetRates, ceilMode);
 
       const { nodes: layoutedNodes, edges: layoutedEdges } =
         await getLayoutedElements(
@@ -264,7 +270,7 @@ export default function ProductionDependencyTree({
     return () => {
       isMounted = false;
     };
-  }, [plan, items, facilities, visualizationMode, targetRates, twoEndAlignment, setNodes, setEdges]);
+  }, [plan, items, facilities, visualizationMode, targetRates, twoEndAlignment, ceilMode, setNodes, setEdges]);
 
   const nodeTypes: NodeTypes = useMemo(
     () => ({
@@ -276,6 +282,7 @@ export default function ProductionDependencyTree({
 
   const edgeTypes = useMemo(
     () => ({
+      simplebezier: CustomBezierEdge,
       backwardEdge: CustomBackwardEdge,
     }),
     [],

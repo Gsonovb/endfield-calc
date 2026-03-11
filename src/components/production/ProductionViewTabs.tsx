@@ -136,6 +136,7 @@ export default function ProductionViewTabs({
                   facilities={facilities}
                   onRecipeChange={onRecipeChange}
                   onToggleRawMaterial={onToggleRawMaterial}
+                  ceilMode={ceilMode}
                 />
               </div>
             </TabsContent>
@@ -147,6 +148,7 @@ export default function ProductionViewTabs({
                 visualizationMode={visualizationMode}
                 targetRates={targetRates}
                 twoEndAlignment={twoEndAlignment}
+                ceilMode={ceilMode}
               />
             </TabsContent>
           </Tabs>

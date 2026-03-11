@@ -1,4 +1,8 @@
 {
+  "belt": {
+    "belts": "ベルト",
+    "tooltip": "必要な出力搬送ベルト（{{belt_rate}}アイテム/分の容量）"
+  },
   "recipe": {
     "inputs": "入力",
     "outputs": "出力",
@@ -6,12 +10,13 @@
   },
   "table": {
     "headers": {
+      "belts": "ベルト",
       "count": "数量",
       "facility": "施設",
       "icon": "アイコン",
       "item": "アイテム",
       "outputRate": "生産量/分",
-      "power": "電力 (kW)",
+      "power": "電力",
       "rawMaterial": "原材料",
       "recipe": "レシピ"
     },

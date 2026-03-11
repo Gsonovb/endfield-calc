@@ -29,7 +29,9 @@ export function mapPlanToFlowSeparated(
   plan: ProductionDependencyGraph,
   items: Item[],
   facilities: Facility[],
+  beltLabel: string,
   targetRates?: Map<ItemId, number>,
+  ceilMode = false,
 ): { nodes: (FlowProductionNode | FlowTargetNode)[]; edges: Edge[] } {
   const poolManager = new CapacityPoolManager();
   const rawMaterialPickupPoints = new Map<
@@ -117,6 +119,7 @@ export function mapPlanToFlowSeparated(
             totalFacilities: count,
             isPartialLoad,
             isDirectTarget: false,
+            ceilMode,
           },
         ),
       );
@@ -149,6 +152,9 @@ export function mapPlanToFlowSeparated(
           pp.nodeId,
           consumerFacilityId,
           allocated,
+          beltLabel,
+          undefined,
+          ceilMode,
         ),
       );
     }
@@ -219,7 +225,9 @@ export function mapPlanToFlowSeparated(
           allocation.sourceNodeId,
           consumerFacilityId,
           allocation.allocatedAmount,
+          beltLabel,
           edgeDirection,
+          ceilMode,
         ),
       );
 
@@ -258,6 +266,7 @@ export function mapPlanToFlowSeparated(
                 totalFacilities: totalFacilities,
                 isPartialLoad: isPartialLoad,
                 isDirectTarget: false,
+                ceilMode,
               },
             ),
           );
@@ -325,6 +334,7 @@ export function mapPlanToFlowSeparated(
             totalFacilities: facilityInstances.length,
             isPartialLoad: isPartialLoad,
             isDirectTarget: false,
+            ceilMode,
           },
         ),
       );
@@ -399,6 +409,7 @@ export function mapPlanToFlowSeparated(
               isPartialLoad,
               isDirectTarget: true,
               directTargetRate: facilityInstance.actualOutputRate,
+              ceilMode,
             },
           ),
         );
@@ -410,6 +421,9 @@ export function mapPlanToFlowSeparated(
             facilityInstance.facilityId,
             targetSinkId,
             facilityInstance.actualOutputRate,
+            beltLabel,
+            undefined,
+            ceilMode,
           ),
         );
 
@@ -442,6 +456,7 @@ export function mapPlanToFlowSeparated(
           items,
           facilities,
           undefined,
+          ceilMode,
         ),
       );
     } else {
@@ -461,6 +476,7 @@ export function mapPlanToFlowSeparated(
                 recipe: producerRecipe.recipe,
               }
             : undefined,
+          ceilMode,
         ),
       );
 

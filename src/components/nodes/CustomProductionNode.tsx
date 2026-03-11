@@ -15,7 +15,7 @@ import type {
   FlowNodeDataSeparatedWithTarget,
   FlowNodeDataWithTarget,
 } from "@/types";
-import { getPickupPointCount } from "@/lib/utils";
+import { getBeltCount, getPickupPointCount } from "@/lib/utils";
 
 /**
  * Type alias for a React Flow node containing production data.
@@ -68,7 +68,7 @@ function hasTargetInfo(
 export default function CustomProductionNode({
   data,
 }: NodeProps<FlowProductionNode>) {
-  const { productionNode: node, items } = data;
+  const { productionNode: node, items, ceilMode = false } = data;
   const { t } = useTranslation("production");
 
   /**
@@ -133,7 +133,7 @@ export default function CustomProductionNode({
                     {data.totalFacilities}
                   </div>
                   <div className="text-muted-foreground">
-                    {t("tree.power")}: {facility.powerConsumption} MW
+                    {t("tree.power")}: {facility.powerConsumption}
                   </div>
                   {data.isPartialLoad && (
                     <div className="text-yellow-600 dark:text-yellow-400 text-xs mt-1">
@@ -144,13 +144,12 @@ export default function CustomProductionNode({
               ) : (
                 // Merged mode: show total power
                 <div className="text-muted-foreground">
-                  {t("tree.power")}: {facility.powerConsumption} MW ×{" "}
+                  {t("tree.power")}: {facility.powerConsumption} ×{" "}
                   {formatNumber(node.facilityCount, 1)} ={" "}
                   {formatNumber(
                     facility.powerConsumption * node.facilityCount,
                     1,
-                  )}{" "}
-                  MW
+                  )}
                 </div>
               )}
             </div>
@@ -206,9 +205,14 @@ export default function CustomProductionNode({
               <span className="text-muted-foreground text-[10px]">
                 {node.isRawMaterial ? t("tree.required") : t("tree.produced")}
               </span>
-              <span className="font-mono font-semibold text-xs">
-                {formatNumber(node.targetRate)} /min
-              </span>
+              <div className="flex flex-col items-end">
+                <span className="font-mono font-semibold text-xs">
+                  {formatNumber(node.targetRate)} /min
+                </span>
+                <span className="text-[10px] text-muted-foreground tabular-nums">
+                  {formatNumber(getBeltCount(node.targetRate, ceilMode as boolean), ceilMode ? 0 : 1)} {t("belt.belts")}
+                </span>
+              </div>
             </div>
             {/* Facility details */}
             {!node.isRawMaterial && facility && (
