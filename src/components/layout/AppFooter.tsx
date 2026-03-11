@@ -32,7 +32,7 @@ export default function AppFooter() {
         </div>
         {/* Right section */}
         <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-          <span>© 2025 jambochen</span>
+          <span>© 2025 JamboChen</span>
           <span className="text-muted-foreground/60">•</span>
           <span className="flex items-center gap-1">
             <Scale className="h-3 w-3" />
