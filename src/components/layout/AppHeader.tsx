@@ -41,10 +41,11 @@ export default function AppHeader({ onLanguageChange, onSavePlan, onOpenPlan }: 
                 variant="ghost"
                 size="sm"
                 onClick={onSavePlan}
-                className="h-9 w-9 p-0"
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                 aria-label={t("header.save")}
               >
                 <Save className="h-4 w-4" />
+                <span>{t("header.save")}</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>{t("header.save")}</TooltipContent>
@@ -57,10 +58,11 @@ export default function AppHeader({ onLanguageChange, onSavePlan, onOpenPlan }: 
                 variant="ghost"
                 size="sm"
                 onClick={onOpenPlan}
-                className="h-9 w-9 p-0"
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                 aria-label={t("header.open")}
               >
                 <FolderOpen className="h-4 w-4" />
+                <span>{t("header.open")}</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>{t("header.open")}</TooltipContent>

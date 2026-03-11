@@ -41,6 +41,9 @@
     "targetRate": "Target rate",
     "pickupPoint": "Pickup Point",
     "trueRawMaterial": "True raw material",
-    "exportImage": "Export Image"
+    "exportImage": "Export Image",
+    "exportFormat": "Format",
+    "exportScale": "Scale",
+    "exportConfirm": "Export"
   }
 }

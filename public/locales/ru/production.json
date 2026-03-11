@@ -41,6 +41,9 @@
     "targetRate": "Целевая скорость",
     "pickupPoint": "Точка выдачи",
     "trueRawMaterial": "Настоящее сырье",
-    "exportImage": "Экспорт изображения"
+    "exportImage": "Экспорт изображения",
+    "exportFormat": "Формат",
+    "exportScale": "Масштаб",
+    "exportConfirm": "Экспорт"
   }
 }

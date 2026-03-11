@@ -41,6 +41,9 @@
     "targetRate": "Tasa objetivo",
     "pickupPoint": "Punto de recogida",
     "trueRawMaterial": "Materia prima verdadera",
-    "exportImage": "Exportar imagen"
+    "exportImage": "Exportar imagen",
+    "exportFormat": "Formato",
+    "exportScale": "Escala",
+    "exportConfirm": "Exportar"
   }
 }
