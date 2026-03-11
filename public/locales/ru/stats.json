@@ -1,4 +1,5 @@
 {
+  "pickupPoints": "Порты выдачи",
   "powerUnit": "кВт",
   "productionSteps": "Этапы производства",
   "rawMaterialUsage": "Расход сырья",
