@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTheme } from "../ui/theme-provider";
 import { MessageCircle, Sun, Moon, Save, FolderOpen } from "lucide-react";
-import { SiGithub, SiDiscord, SiTencentqq } from "react-icons/si";
+import { SiGithub, SiDiscord, SiQq } from "react-icons/si";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface AppHeaderProps {
@@ -99,7 +99,7 @@ export default function AppHeader({ onLanguageChange, onSavePlan, onOpenPlan }: 
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 cursor-pointer"
                 >
-                  <SiTencentqq className="h-4 w-4" />
+                  <SiQq className="h-4 w-4" />
                   <span>{t("header.qqGroup")}</span>
                 </a>
               </DropdownMenuItem>
